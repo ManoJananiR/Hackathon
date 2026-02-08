@@ -1,131 +1,126 @@
-# Tambo Template
+# 📚 Read Origin Guide
+# TamboAI #WeMakeDevs
+## 🔍 Project Overview
 
-This is a starter NextJS app with Tambo hooked up to get your AI app development started quickly.
+**Jan Book Explorer Guide** is an AI-powered, generative book exploration interface inspired by **Tambo-style conversational UIs**.
+Users interact through a simple chat interface by entering a book name, and the application dynamically generates structured insights on a single screen.
 
-## Get Started
+The UI adapts in real time based on the user’s query, presenting:
 
-1. Run `npm create-tambo@latest my-tambo-app` for a new project
+* A clear **Context summary** of the book
+* **Ratings and metadata**
+* A **visual comparison chart** rendered as real bar charts
 
-2. `npm install`
+This creates a fast, intuitive, and insight-rich experience for readers, students, and researchers.
 
-3. `npx tambo init`
+---
 
-- or rename `example.env.local` to `.env.local` and add your tambo API key you can get for free [here](https://tambo.co/dashboard).
+## 🚀 Usage
 
-4. Run `npm run dev` and go to `localhost:3000` to use the app!
+1. Enter a book name (e.g., *Things you can see when you slow down*, *Dune*)
+2. Click **Ask**
+3. Instantly view:
 
-## Customizing
+   * Book origin & contextual summary
+   * Rating and key attributes
+   * A comparison chart
+4. Download the AI-generated summary for offline use
 
-### Change what components tambo can control
+All content appears on **one responsive screen** without navigation or reloads.
 
-You can see how components are registered with tambo in `src/lib/tambo.ts`:
+---
 
-```tsx
-export const components: TamboComponent[] = [
-  {
-    name: "Graph",
-    description:
-      "A component that renders various types of charts (bar, line, pie) using Recharts. Supports customizable data visualization with labels, datasets, and styling options.",
-    component: Graph,
-    propsSchema: graphSchema,
-  },
-  // Add more components here
-];
-```
+## 🧠 How Tambo-Style Architecture Works Here
 
-You can install the graph component into any project with:
+This project follows the **Tambo philosophy** of separating:
 
-```bash
-npx tambo add graph
-```
+* **Conversation control** (chat input)
+* **Generative UI output** (grids, charts, summaries)
 
-The example Graph component demonstrates several key features:
+Instead of returning plain text, each API response returns **structured data**, which the UI transforms into:
 
-- Different prop types (strings, arrays, enums, nested objects)
-- Multiple chart types (bar, line, pie)
-- Customizable styling (variants, sizes)
-- Optional configurations (title, legend, colors)
-- Data visualization capabilities
+* Adaptive grids
+* Visual charts
+* Downloadable content
 
-Update the `components` array with any component(s) you want tambo to be able to use in a response!
+This mirrors how Tambo enables **context-aware UI generation** rather than static responses.
 
-You can find more information about the options [here](https://docs.tambo.co/concepts/generative-interfaces/generative-components)
+### Why Tambo-style is powerful here:
 
-### Add tools for tambo to use
+* UI changes automatically based on intent
+* Easy to extend with new grids or visual blocks
+* Clean separation of logic and presentation
+* Ideal for SDK-style productization
 
-Tools are defined with `inputSchema` and `outputSchema`:
+---
 
-```tsx
-export const tools: TamboTool[] = [
-  {
-    name: "globalPopulation",
-    description:
-      "A tool to get global population trends with optional year range filtering",
-    tool: getGlobalPopulationTrend,
-    inputSchema: z.object({
-      startYear: z.number().optional(),
-      endYear: z.number().optional(),
-    }),
-    outputSchema: z.array(
-      z.object({
-        year: z.number(),
-        population: z.number(),
-        growthRate: z.number(),
-      }),
-    ),
-  },
-];
-```
+## 🌐 APIs & AI Integration
 
-Find more information about tools [here.](https://docs.tambo.co/concepts/tools)
+### 📘 Google Books API
 
-### The Magic of Tambo Requires the TamboProvider
+Used to fetch **real-time book data**:
 
-Make sure in the TamboProvider wrapped around your app:
+* Title, authors
+* Ratings
+* Publication info
+* Page count
 
-```tsx
-...
-<TamboProvider
-  apiKey={process.env.NEXT_PUBLIC_TAMBO_API_KEY!}
-  components={components} // Array of components to control
-  tools={tools} // Array of tools it can use
->
-  {children}
-</TamboProvider>
-```
+This ensures **accurate, up-to-date, non-mock data** for every book search.
 
-In this example we do this in the `Layout.tsx` file, but you can do it anywhere in your app that is a client component.
+### 🤖 OpenAI (AI Summary)
 
-### Voice input
+Used to generate:
 
-The template includes a `DictationButton` component using the `useTamboVoice` hook for speech-to-text input.
+* Clear summaries
+* Contextual origin explanation
+* Reader-friendly descriptions (not scraped text)
 
-### MCP (Model Context Protocol)
+The AI converts raw metadata into **human-readable insights**, which is critical for knowledge-based applications.
 
-The template includes MCP support for connecting to external tools and resources. You can use the MCP hooks from `@tambo-ai/react/mcp`:
+---
 
-- `useTamboMcpPromptList` - List available prompts from MCP servers
-- `useTamboMcpPrompt` - Get a specific prompt
-- `useTamboMcpResourceList` - List available resources
+## 🛠️ Technologies Used
 
-See `src/components/tambo/mcp-components.tsx` for example usage.
+* **Next.js (App Router)**
+* **React + TypeScript**
+* **Tailwind CSS**
+* **Google Books API**
+* **OpenAI API**
+* **Node.js API Routes**
+  
+📂 Key Project Files (Overview)
 
-### Change where component responses are shown
+src/ – Application source
 
-The components used by tambo are shown alongside the message response from tambo within the chat thread, but you can have the result components show wherever you like by accessing the latest thread message's `renderedComponent` field:
+app/
 
-```tsx
-const { thread } = useTambo();
-const latestComponent =
-  thread?.messages[thread.messages.length - 1]?.renderedComponent;
+page.tsx → Core interface handling chat input and dynamic UI rendering
 
-return (
-  <div>
-    {latestComponent && (
-      <div className="my-custom-wrapper">{latestComponent}</div>
-    )}
-  </div>
-);
-```
+layout.tsx → App-wide layout setup and providers
 
-For more detailed documentation, visit [Tambo's official docs](https://docs.tambo.co).
+globals.css → Global styling powered by Tailwind CSS
+
+api/
+
+book/route.ts → Fetches book metadata using the Google Books API
+
+summary/route.ts → Generates AI-written book summaries via OpenAI
+
+tambo/route.ts → Manages Tambo-style intent handling and UI orchestration
+
+lib/
+
+ui.schema.ts → Defines the dynamic UI blueprint that controls how components are laid out and rendered at runtime
+## 🌟 Why This Project Stands Out
+
+* **Generative UI, not static pages**
+* **Single-screen intelligent layout**
+* Real-time data + AI synthesis
+* Clean SDK-like architecture
+* Easily extendable into a **Tambo Chat SDK**
+
+---
+
+## 🏁 Final Note
+
+**ReadOrigin** demonstrates how conversational input combined with structured generative AI responses can create powerful, scalable interfaces — exactly what modern AI platforms like **Tambo** aim to enable.
