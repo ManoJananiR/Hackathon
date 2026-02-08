@@ -1,0 +1,8 @@
+@import "tailwindcss";
+
+/* Put @apply rules inside a layer */
+@layer components {
+  .panel {
+    @apply rounded-xl border bg-white p-4 shadow-sm;
+  }
+}
